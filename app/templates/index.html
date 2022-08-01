@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block head %}
+<script type="text/javascript">
+const ICECAST_STREAM_URL = "{{ config.ICECAST_STREAM_URL }}";
+</script>
+<script defer src="{{ url_for('static', filename='js/player.js') }}" type="text/javascript"></script>
+<script defer src="{{ url_for('static', filename='js/radio.js') }}"  type="text/javascript"></script>
+{% endblock %}
+
+{% block body %}
+<div class="box">
+  <div class="controls">
+    <div class="radioplayer" id="radioplayer">
+      <div class="radioplayer-row">
+        <div class="withscript current-track">
+          <header>
+            <h1 id="nowplaying"></h1>
+          </header>
+        </div>
+        <div class="button-group playback-buttons">
+          <div class="button-section">
+              <div class="withscript button inline" onclick="RadioPlayer.togglePlay()">
+                <i id="play-toggle" class="fa fa-play" aria-hidden="true"></i>
+              </div>
+          </div>
+          <div class="withscript button inline" onclick="RadioPlayer.cycleVolume()">
+            <i id="volume-button" class="fa fa-volume-down" aria-hidden="true"></i>
+          </div>
+        </div>
+      </div>
+      <div class="radioplayer-row progress">
+      </div>
+    </div>
+
+    <div class="channel-row">
+      <div class="channel-row-block">
+        <span class="withscript">[ <span class="inlineheading">listeners:</span> <span id="listeners"></span> ]</span>
+      </div>
+      <div class="channel-row-block-right">
+        <span class="withscript">[ <span class="inlineheading">playlist:</span>
+          <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.m3u') }}">m3u</a> /
+          <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.xspf') }}">xspf</a>
+        ]</span>
+      </div>
+    </div>
+  </div>
+
+  <hr/>
+
+  <div class="withscript">
+    <table id="playlist" class="playlist">
+      <tbody id="playlist_body"></tbody>
+    </table>
+  </div>
+</div>
+
+<footer>
+  [
+  <a href="https://social.net.ua" target="_blank">pleroma</a>
+  ]
+</footer>
+{% endblock %}

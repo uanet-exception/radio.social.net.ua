@@ -1,0 +1,100 @@
+body {
+  background: url("/static/background.jpg") center center / cover no-repeat fixed;
+  font-family: monospace;
+  font-size: 16px;
+  color: white;
+}
+
+a, a:active, a:link, a:hover, a:visited {
+  color: white;
+}
+
+.box, body > footer {
+  background-color: #212121;
+  border: 1px solid #313131;
+  box-shadow: 0 0 25px #729fcf;
+}
+
+select, input, audio, hr, textarea {
+  border: 1px solid #313131;
+}
+
+hr {
+  background-color: 1px solid #313131;
+}
+
+select, input, textarea {
+  color: white;
+  font-family: monospace;
+  font-size: 0.9rem;
+  background-color: #212121;
+}
+
+.alert {
+  color: #B83602;
+}
+
+.plain {
+  color: white;
+}
+
+h1 {
+  color: #729fcf;
+  text-shadow: 0 0 5px #729fcf;
+  font-size: 1.3rem;
+  font-weight: normal;
+}
+
+h2 {
+  font-size: 0.8rem;
+}
+
+h2, strong {
+  color: #F0546A;
+  text-shadow: 0 0 5px #F0546A;
+  font-weight: normal;
+}
+
+input[type=button], input[type=submit] {
+  color: #729fcf;
+  box-shadow: 0 0 5px #729fcf;
+  border-color: #153B3E;
+  background-color: #153B3E;
+}
+
+thead {
+  font-size: 1.2em;
+}
+
+.inlineheading {
+  color: #F0546A;
+}
+
+#playlist {
+  color: #999;
+}
+
+.current_track {
+  font-weight: bold;
+}
+
+.track.current_track {
+  color: #729fcf;
+}
+
+.dur.current_track {
+  color: #F0546A;
+  padding-right: 1em;
+}
+
+#radioplayer i {
+  color: #729fcf;
+}
+
+.progressbar {
+    background: #153B3E;
+}
+
+#track-progress {
+    background: #729fcf;
+}
