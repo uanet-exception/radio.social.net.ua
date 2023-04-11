@@ -1,7 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Radio Social.Net.Ua {% block title %}{% endblock %}</title>
+    <!-- Primary Meta Tags -->
+    <title>Radio Social.Net.Ua</title>
+    <meta name="title" content="Radio Social.Net.Ua">
+    <meta name="description" content="Маленька інтернет-радіостанція для незламних, вільних людей!">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://radio.social.net.ua/">
+    <meta property="og:title" content="Radio Social.Net.Ua">
+    <meta property="og:description" content="Маленька інтернет-радіостанція для незламних, вільних людей!">
+    <meta property="og:image" content="/static/mic.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://radio.social.net.ua/">
+    <meta property="twitter:title" content="Radio Social.Net.Ua">
+    <meta property="twitter:description" content="Маленька інтернет-радіостанція для незламних, вільних людей!">
+    <meta property="twitter:image" content="/static/mic.jpg">
+
     <meta charset="UTF-8">
     <meta name="theme-color" content="#1e1a1c">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -9,9 +27,9 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/themes/default.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/font-awesome.min.css') }}">
-    {% block head %}{% endblock %}
+    {%- block head %}{% endblock -%}
   </head>
   <body>
-    {% block body %}{% endblock %}
+    {%- block body %}{% endblock -%}
   </body>
 </html>
