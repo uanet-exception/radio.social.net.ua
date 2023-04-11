@@ -152,6 +152,7 @@ table {
 
 .radioplayer i {
   font-size: 30px;
+  width: 30px;
 }
 
 .radioplayer-row {
@@ -236,6 +237,7 @@ table {
 
 .playlist .dur {
   text-align: right;
+  width: 150px;
 }
 
 /* fake queue */

@@ -87,7 +87,7 @@ function check_playlist() {
         // Update the current/peak listeners counts
         document.getElementById("listeners").innerText = `${response.listeners.current}`;
         if ('peak' in response.listeners) {
-            document.getElementById("listeners").innerText += ` (peak ${response.listeners.peak})`;
+            document.getElementById("listeners").innerText += ` (пік ${response.listeners.peak})`;
         }
     });
 }
