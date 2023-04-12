@@ -52,12 +52,21 @@ function check_playlist() {
             // The duration
             let time = "";
             if(acc < 60) {
-                time = "under a min";
+                time = "менше хвилини";
             } else {
                 time = Math.round(acc / 60);
-                time += " min" + ((time==1) ? "" : "s");
+                if ((time % 100) > 4 && (time % 100) < 20) {
+                    time += " хвилин";
+                } else {
+                    var choices = ["хвилину", "хвилини", "хвилин"];
+                    var cases = [2, 0, 1, 1, 1, 2];
+                    var i = (time % 10) < 5 ? (time % 10) : 5;
+                    time += " " + choices[cases[i]];
+                }
+                // time += " min" + ((time==1) ? "" : "s");
+                // time += ((time==1) ? " хвилину" : " хвилин");
             }
-            dcell.innerText = time + " ago";
+            dcell.innerText = time + " тому";
         }
 
         // New accumulator
