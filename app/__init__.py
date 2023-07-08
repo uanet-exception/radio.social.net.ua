@@ -10,5 +10,14 @@ scheduler.init_app(app)
 scheduler.start()
 
 
+@app.context_processor
+def site_variables():
+    return {
+        'url': app.config.get('SITE_URL'),
+        'title': app.config.get('SITE_TITLE'),
+        'description': app.config.get('SITE_DESCRIPTION'),
+    }
+
+
 from app import routes  # NOQA: F401, E402
 from app.runners import tasks  # NOQA: F401, E402
