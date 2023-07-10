@@ -1,30 +1,137 @@
 {% extends "layout.html" %}
 
 {% block head %}
-    <script type="text/javascript">
-      const ICECAST_STREAM_URL = "{{ config.ICECAST_STREAM_URL }}";
-    </script>
-    <script defer src="{{ url_for('static', filename='js/player.js') }}" type="text/javascript"></script>
-    <script defer src="{{ url_for('static', filename='js/radio.js') }}"  type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='js/jquery.min.js') }}" type="text/javascript"></script>
+  <script src="{{ url_for('static', filename='js/jquery.jplayer.min.js') }}" type="text/javascript"></script>
+  <script type="text/javascript">
+  //<![CDATA[
+  var $ = jQuery;
+
+  $(document).ready(function(){
+
+    setInterval("checkStatus()", 10000);
+
+    window.mainPlayer = $("#jquery_jplayer_1");
+
+    var ready = false;
+
+    $("#jquery_jplayer_1").jPlayer({
+      ready: function (event) {
+        ready = true;
+      },
+      pause: function() {
+        $(this).jPlayer("clearMedia");
+      },
+      error: function(event) {
+        if(ready && event.jPlayer.error.type === $.jPlayer.error.URL_NOT_SET) {
+          // Setup the media stream again and play it.
+          $(this).jPlayer("setMedia", {
+            mp3: `{{ config.ICECAST_STREAM_URL }}?nocache=${Date.now()}`,
+          }).jPlayer("play");
+        }
+      },
+      supplied: "mp3",
+      preload: "none",
+      keyEnabled: true,
+      volume: 1.0,
+    });
+  })
+
+  .on('click', '#volume-button', function(e) {
+    let action = $(this).is('.fa-volume-off') ? "unmute" : "mute";
+    window.mainPlayer.jPlayer(action);
+    $(this).toggleClass('fa-volume-up fa-volume-off');
+  })
+
+  .on('click', '#play-toggle', function(e) {
+    let action = $(this).is('.fa-play') ? "play" : "pause";
+    window.mainPlayer.jPlayer(action);
+    $(this).toggleClass('fa-play fa-pause');
+  })
+
+  .keyup(function (event) {
+    let key = (event.keyCode ? event.keyCode : event.which);
+    if (key == '32') {
+      let action = $("#play-toggle").is('.fa-play') ? "play" : "pause";
+      console.log(action)
+      window.mainPlayer.jPlayer(action);
+      $("#play-toggle").toggleClass('fa-play fa-pause');
+    }
+  });
+
+  function checkStatus() {
+    function format_track(track) {
+      return (track.artist) ? (track.artist + " - " + track.title) : track.title;
+    }
+
+    function format_duration(acc) {
+      let time = "";
+      if(acc < 60) {
+        time = "менше хвилини";
+      } else {
+        time = Math.round(acc / 60);
+        if ((time % 100) > 4 && (time % 100) < 20) {
+          time += " хвилин";
+        } else {
+          var choices = ["хвилину", "хвилини", "хвилин"];
+          var cases = [2, 0, 1, 1, 1, 2];
+          var i = (time % 10) < 5 ? (time % 10) : 5;
+          time += " " + choices[cases[i]];
+        }
+      }
+      return time + " тому";
+    }
+
+    $.getJSON(`/playlist.json`, function(response){
+      // Update the "now playing"
+      $("#nowplaying").text(format_track(response.current));
+
+      // Update the current/peak listeners counts
+      $("#listeners").text(`${response.listeners.current} (пік ${response.listeners.peak})`);
+
+      // Update playlist
+      var content = '<tr><td class="current_track track">';
+      content += format_track(response.current);
+      content += '</td><td class="current_track dur"><i class="fa fa-arrow-circle-o-left"></i></td></tr>';
+
+      let ago = parseFloat(response.elapsed);
+      response.before.forEach((track) => {
+        content += '<tr><td class="track">';
+        content += format_track(track);
+        content += '</td><td class="dur">'
+        content += format_duration(ago);
+        content += '</td></tr>';
+        ago += parseFloat(track.time);
+      })
+
+      $("#playlist_body").html(content);
+    });
+  }
+
+  checkStatus();
+
+  //]]>
+  </script>
 {% endblock %}
 
 {% block body %}
   <div class="box">
     <div class="controls">
+      <div id="jquery_jplayer_1" class="jp-jplayer"></div>
       <div class="radioplayer" id="radioplayer">
         <div class="radioplayer-row">
-          <div class="withscript current-track">
+          <div class="current-track">
             <header>
               <h1 id="nowplaying"></h1>
             </header>
           </div>
           <div class="button-group playback-buttons">
             <div class="button-section">
-                <div class="withscript button inline" onclick="RadioPlayer.togglePlay()">
+                <div class="button inline">
                   <i id="play-toggle" class="fa fa-play" aria-hidden="true"></i>
                 </div>
             </div>
-            <div class="withscript button inline" onclick="RadioPlayer.cycleVolume()">
+            <div class="button inline">
               <i id="volume-button" class="fa fa-volume-up" aria-hidden="true"></i>
             </div>
           </div>
@@ -35,10 +142,10 @@
 
       <div class="channel-row">
         <div class="channel-row-block">
-          <span class="withscript">[ <span class="inlineheading">слухачів:</span> <span id="listeners"></span> ]</span>
+          <span>[ <span class="inlineheading">слухачів:</span> <span id="listeners"></span> ]</span>
         </div>
         <div class="channel-row-block-right">
-          <span class="withscript">[ <span class="inlineheading">плейліст:</span>
+          <span>[ <span class="inlineheading">плейліст:</span>
             <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.m3u') }}">m3u</a> /
             <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.xspf') }}">xspf</a>
           ]</span>
@@ -48,7 +155,7 @@
 
     <hr/>
 
-    <div class="withscript">
+    <div>
       <table id="playlist" class="playlist">
         <tbody id="playlist_body"></tbody>
       </table>
