@@ -16,6 +16,8 @@ def site_variables():
         'url': app.config.get('SITE_URL'),
         'title': app.config.get('SITE_TITLE'),
         'description': app.config.get('SITE_DESCRIPTION'),
+        'fediverse_url': app.config.get('FEDIVERSE_URL'),
+        'github_url': app.config.get('GITHUB_URL'),
     }
 
 
