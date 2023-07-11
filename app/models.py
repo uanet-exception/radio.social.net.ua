@@ -18,11 +18,14 @@ class IcecastStatus(object):
             return self
 
         with open(self.filename, 'r') as fd:
-            snapshot = json.load(fd)
-            self.before = snapshot.get('before')
-            self.current = snapshot.get('current')
-            self.listeners = snapshot.get('listeners')
-            self.listener_peak = snapshot.get('listener_peak')
+            try:
+                snapshot = json.load(fd)
+                self.before = snapshot.get('before')
+                self.current = snapshot.get('current')
+                self.listeners = snapshot.get('listeners')
+                self.listener_peak = snapshot.get('listener_peak')
+            except json.decoder.JSONDecodeError:
+                pass
 
     def save(self):
         with tempfile.NamedTemporaryFile(delete=False, mode='w+') as fd:
