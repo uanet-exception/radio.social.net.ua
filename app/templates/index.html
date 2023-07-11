@@ -82,7 +82,7 @@
       return time + " тому";
     }
 
-    $.getJSON(`/playlist.json`, function(response){
+    $.getJSON("{{ url_for('playlist_json') }}", function(response){
       // Update the "now playing"
       $("#nowplaying").text(format_track(response.current));
 
@@ -146,8 +146,8 @@
         </div>
         <div class="channel-row-block-right">
           <span>[ <span class="inlineheading">плейліст:</span>
-            <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.m3u') }}">m3u</a> /
-            <a id="mp3link" target="_blank" href="{{ url_for('static', filename='live.mp3.xspf') }}">xspf</a>
+            <a id="mp3link" target="_blank" href="{{ url_for('live_m3u') }}">m3u</a> /
+            <a id="mp3link" target="_blank" href="{{ url_for('live_xspf') }}">xspf</a>
           ]</span>
         </div>
       </div>
