@@ -92,9 +92,10 @@ thead {
 }
 
 .progressbar {
-    background: #153B3E;
+  background: #153B3E;
 }
 
-#track-progress {
-    background: #729fcf;
+#volume-percentage {
+  color: #729FCF;
+  font-weight: bold;
 }

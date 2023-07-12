@@ -22,7 +22,8 @@
         $("#jquery_jplayer_1").jPlayer({
           ready: function (event) {
             ready = true;
-            $("#volume-range").val(volume);
+            $("#volume-slider").val(volume);
+            $("#volume-percentage").text(volume * 100 + '%');
           },
           pause: function () {
             $(this).jPlayer("clearMedia");
@@ -41,8 +42,9 @@
           volume: volume,
         });
       })
-      .on('change', '#volume-range', function (e) {
+      .on('change', '#volume-slider', function (e) {
         window.mainPlayer.jPlayer("volume", $(this).val());
+        $("#volume-percentage").text($(this).val() * 100 + '%');
         localStorage.setItem('volume', $(this).val());
       })
       .on('click', '#play-toggle', function (e) {
@@ -130,8 +132,9 @@
               </div>
             </div>
             <div class="button-section">
-              <input type="range" id="volume-range" name="volume" min="0" max="1" step="0.1" value="0.5">
+              <input type="range" id="volume-slider" name="volume" min="0" max="1" step="0.1" value="0.5"/>
             </div>
+            <span class="fa" id="volume-percentage">50%</span>
             <div class="button-section">
               <div class="button inline">
                 <i class="fa fa-volume-up" aria-hidden="true"></i>

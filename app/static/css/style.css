@@ -109,11 +109,18 @@ table {
   box-sizing: border-box;
 }
 
-#volume-range {
+#volume-slider {
   flex-direction: row;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  cursor: grabbing;
+  width: 100px;
+}
+
+#volume-percentage {
+  text-align: center;
+  width: 42px;
 }
 
 /* controls / radioplayer */
@@ -161,8 +168,8 @@ table {
 }
 
 .channel-row .channel-row-block-right {
-    margin-left: auto;
-    margin-right: 0;
+  margin-left: auto;
+  margin-right: 0;
 }
 
 .channel-row {
