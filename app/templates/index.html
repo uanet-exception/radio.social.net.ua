@@ -4,199 +4,172 @@
     <script src="{{ url_for('static', filename='js/jquery.min.js') }}" type="text/javascript"></script>
     <script src="{{ url_for('static', filename='js/jquery.jplayer.min.js') }}" type="text/javascript"></script>
     <script type="text/javascript">
-        //<![CDATA[
-        var $ = jQuery;
+      //<![CDATA[
+      var $ = jQuery;
 
-        $(document).ready(function () {
+      var volume = localStorage.getItem('volume');
+      if (volume == null)
+        volume = 0.5;
 
-            setInterval("checkStatus()", 10000);
-
-            window.mainPlayer = $("#jquery_jplayer_1");
-
-            var ready = false;
-
-            $("#jquery_jplayer_1").jPlayer({
-                ready: function (event) {
-                    ready = true;
-                },
-                pause: function () {
-                    $(this).jPlayer("clearMedia");
-                },
-                error: function (event) {
-                    if (ready && event.jPlayer.error.type === $.jPlayer.error.URL_NOT_SET) {
-                        // Setup the media stream again and play it.
-                        $(this).jPlayer("setMedia", {
-                            mp3: `{{ config.ICECAST_STREAM_URL }}?nocache=${Date.now()}`,
-                        }).jPlayer("play");
-                    }
-                },
-                supplied: "mp3",
-                preload: "none",
-                keyEnabled: false,
-                volume: 0.5,
-            });
-        })
-
-            .on('change', '#volume-range', function (e) {
-                window.mainPlayer.jPlayer("volume", $(this).val());
-                $(this).toggleClass('fa-volume-up fa-volume-off');
-            })
-
-            .on('click', '#play-toggle', function (e) {
-                let action = $(this).is('.fa-play') ? "play" : "pause";
-                window.mainPlayer.jPlayer(action);
-                $(this).toggleClass('fa-play fa-pause');
-            })
-
-            .keyup(function (event) {
-                let key = (event.keyCode ? event.keyCode : event.which);
-                if (key == '32') {
-                    let action = $("#play-toggle").is('.fa-play') ? "play" : "pause";
-                    console.log(action)
-                    window.mainPlayer.jPlayer(action);
-                    $("#play-toggle").toggleClass('fa-play fa-pause');
-                }
-            });
-
-        function checkStatus() {
-            function format_track(track) {
-                return (track.artist) ? (track.artist + " - " + track.title) : track.title;
-            }
-
-            function format_duration(acc) {
-                let time = "";
-                if (acc < 60) {
-                    time = "менше хвилини";
-                } else {
-                    time = Math.round(acc / 60);
-                    if ((time % 100) > 4 && (time % 100) < 20) {
-                        time += " хвилин";
-                    } else {
-                        var choices = ["хвилину", "хвилини", "хвилин"];
-                        var cases = [2, 0, 1, 1, 1, 2];
-                        var i = (time % 10) < 5 ? (time % 10) : 5;
-                        time += " " + choices[cases[i]];
-                    }
-                }
-                return time + " тому";
-            }
-
-            $.getJSON("{{ url_for('playlist_json') }}", function (response) {
-                // Update the "now playing"
-                $("#nowplaying").text(format_track(response.current));
-
-                // Update the current/peak listeners counts
-                $("#listeners").text(`${response.listeners.current} (пік ${response.listeners.peak})`);
-
-                // Update playlist
-                var content = '<tr><td class="current_track track">';
-                content += format_track(response.current);
-                content += '</td><td class="current_track dur"><i class="fa fa-arrow-circle-o-left"></i></td></tr>';
-
-                let ago = parseFloat(response.elapsed);
-                response.before.forEach((track) => {
-                    content += '<tr><td class="track">';
-                    content += format_track(track);
-                    content += '</td><td class="dur">'
-                    content += format_duration(ago);
-                    content += '</td></tr>';
-                    ago += parseFloat(track.time);
-                })
-
-                $("#playlist_body").html(content);
-            });
-        }
+      $(document).ready(function () {
 
         checkStatus();
+        setInterval("checkStatus()", 10000);
 
-        //]]>
+        window.mainPlayer = $("#jquery_jplayer_1");
+        var ready = false;
+
+        $("#jquery_jplayer_1").jPlayer({
+          ready: function (event) {
+            ready = true;
+            $("#volume-range").val(volume);
+          },
+          pause: function () {
+            $(this).jPlayer("clearMedia");
+          },
+          error: function (event) {
+            if (ready && event.jPlayer.error.type === $.jPlayer.error.URL_NOT_SET) {
+              // Setup the media stream again and play it.
+              $(this).jPlayer("setMedia", {
+                mp3: `{{ config.ICECAST_STREAM_URL }}?nocache=${Date.now()}`,
+              }).jPlayer("play");
+            }
+          },
+          supplied: "mp3",
+          preload: "none",
+          keyEnabled: false,
+          volume: volume,
+        });
+      })
+      .on('change', '#volume-range', function (e) {
+        window.mainPlayer.jPlayer("volume", $(this).val());
+        localStorage.setItem('volume', $(this).val());
+      })
+      .on('click', '#play-toggle', function (e) {
+        let action = $(this).is('.fa-play') ? "play" : "pause";
+        window.mainPlayer.jPlayer(action);
+        $(this).toggleClass('fa-play fa-pause');
+      })
+      .keyup(function (event) {
+        let key = (event.keyCode ? event.keyCode : event.which);
+        if (key == '32') {
+          let action = $("#play-toggle").is('.fa-play') ? "play" : "pause";
+          window.mainPlayer.jPlayer(action);
+          $("#play-toggle").toggleClass('fa-play fa-pause');
+        }
+      });
+
+      function checkStatus() {
+        function format_track(track) {
+          return (track.artist) ? (track.artist + " - " + track.title) : track.title;
+        }
+
+        function format_duration(acc) {
+          let time = "";
+          if (acc < 60) {
+            time = "менше хвилини";
+          } else {
+            time = Math.round(acc / 60);
+            if ((time % 100) > 4 && (time % 100) < 20) {
+              time += " хвилин";
+            } else {
+              var choices = ["хвилину", "хвилини", "хвилин"];
+              var cases = [2, 0, 1, 1, 1, 2];
+              var i = (time % 10) < 5 ? (time % 10) : 5;
+              time += " " + choices[cases[i]];
+            }
+          }
+          return time + " тому";
+        }
+
+        $.getJSON("{{ url_for('playlist_json') }}", function (response) {
+          // Update the "now playing"
+          $("#nowplaying").text(format_track(response.current));
+
+          // Update the current/peak listeners counts
+          $("#listeners").text(`${response.listeners.current} (пік ${response.listeners.peak})`);
+
+          // Update playlist
+          var content = '<tr><td class="current_track track">';
+          content += format_track(response.current);
+          content += '</td><td class="current_track dur"><i class="fa fa-arrow-circle-o-left"></i></td></tr>';
+
+          let ago = parseFloat(response.elapsed);
+          response.before.forEach((track) => {
+            content += '<tr><td class="track">';
+            content += format_track(track);
+            content += '</td><td class="dur">'
+            content += format_duration(ago);
+            content += '</td></tr>';
+            ago += parseFloat(track.time);
+          })
+
+          $("#playlist_body").html(content);
+        });
+      }
+
+      //]]>
     </script>
-{% endblock %}
+{%- endblock %}
 
 {% block body %}
-    <div class="box">
-        <div class="controls">
-            <div id="jquery_jplayer_1" class="jp-jplayer"></div>
-            <div class="radioplayer" id="radioplayer">
-                <div class="radioplayer-row">
-                    <div class="current-track">
-                        <header>
-                            <h1 id="nowplaying"></h1>
-                        </header>
-                    </div>
-                    <div class="button-group playback-buttons">
-                        <div class="button-section">
-                            <div class="button inline">
-                                <i id="play-toggle" class="fa fa-play" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                        <div class="button-section">
-                            <div class="button inline">
-                                <i class="fa fa-volume-up" aria-hidden="true"></i>
-                            </div>
-                        </div>
-                        <div class="button inline">
-                            <input type="range" id="volume-range" name="volume"
-         min="0" max="1" step="0.1" value="0.5">
-                        </div>
-                    </div>
-                </div>
-                <div class="radioplayer-row progress">
-                </div>
+  <div class="box">
+    <div class="controls">
+      <div id="jquery_jplayer_1" class="jp-jplayer"></div>
+      <div class="radioplayer" id="radioplayer">
+        <div class="radioplayer-row">
+          <div class="current-track">
+            <header>
+              <h1 id="nowplaying"></h1>
+            </header>
+          </div>
+          <div class="button-group playback-buttons">
+            <div class="button-section">
+              <div class="button inline">
+                <i id="play-toggle" class="fa fa-play" aria-hidden="true"></i>
+              </div>
             </div>
+            <div class="button-section">
+              <input type="range" id="volume-range" name="volume" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            <div class="button-section">
+              <div class="button inline">
+                <i class="fa fa-volume-up" aria-hidden="true"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
-            <div class="channel-row">
-                <div class="channel-row-block">
-                    <span>[ <span class="inlineheading">слухачів:</span> <span id="listeners"></span> ]</span>
-                </div>
-                <div class="channel-row-block-right">
+      <div class="channel-row">
+        <div class="channel-row-block">
+          <span>[ <span class="inlineheading">слухачів:</span> <span id="listeners"></span> ]</span>
+        </div>
+        <div class="channel-row-block-right">
           <span>[ <span class="inlineheading">плейліст:</span>
             <a id="mp3link" target="_blank" href="{{ url_for('live_m3u') }}">m3u</a> /
             <a id="mp3link" target="_blank" href="{{ url_for('live_xspf') }}">xspf</a>
           ]</span>
-                </div>
-            </div>
         </div>
-
-        <hr/>
-
-        <div>
-            <table id="playlist" class="playlist">
-                <tbody id="playlist_body"></tbody>
-            </table>
-        </div>
-
-        <hr/>
-
-        {% if fediverse_url %}
-            <a class="widget-social__link widget__link btn" title="Fediverse" rel="noopener noreferrer"
-               href="{{ fediverse_url }}" target="_blank">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 196.52 196.52"
-                     style="fill: #729fcf">
-                    <g color="#000">
-                        <path d="M181.13 275.14a68.892 68.892 0 0 1-29.465 29.328l161.76 162.39 38.998-19.764-171.29-171.95zm213.36 214.19-38.998 19.764 81.963 82.283a68.892 68.892 0 0 1 29.471-29.332L394.49 489.33zM581.65 339.39l-91.576 46.41 6.752 43.189 103.62-52.514a68.892 68.892 0 0 1-18.791-37.086zm-144.74 73.352-216.53 109.73a68.892 68.892 0 0 1 18.795 37.09l204.48-103.63-6.752-43.191zM367.28 142.44 262.8 346.41l30.848 30.967 110.62-215.96a68.892 68.892 0 0 1-36.99-18.98zM235.63 399.46l-52.922 103.31a68.892 68.892 0 0 1 36.986 18.979l46.781-91.328-30.846-30.965zM150.77 304.92a68.892 68.892 0 0 1-34.416 7.1953 68.892 68.892 0 0 1-6.6504-.69531l30.902 197.66a68.892 68.892 0 0 1 34.416-7.1953 68.892 68.892 0 0 1 6.6465.69531l-30.898-197.66zM239.34 560.54a68.892 68.892 0 0 1 .7207 13.877 68.892 68.892 0 0 1-7.2676 27.18l197.63 31.713a68.892 68.892 0 0 1-.72266-13.879 68.892 68.892 0 0 1 7.2695-27.178l-197.63-31.713zM601.13 377.2l-91.219 178.08a68.892 68.892 0 0 1 36.994 18.982l91.217-178.08a68.892 68.892 0 0 1-36.992-18.984zM476.72 125.33a68.892 68.892 0 0 1-29.471 29.332l141.27 141.81a68.892 68.892 0 0 1 29.469-29.332l-141.26-141.81zM347.79 104.63l-178.58 90.498a68.892 68.892 0 0 1 18.793 37.086l178.57-90.502a68.892 68.892 0 0 1-18.791-37.082zM446.93 154.83a68.892 68.892 0 0 1-34.982 7.4824 68.892 68.892 0 0 1-6.0293-.63281l15.818 101.29 43.162 6.9258-17.969-115.07zm-16 167.03 37.4 239.48a68.892 68.892 0 0 1 33.914-6.9434 68.892 68.892 0 0 1 7.207.79101l-35.357-226.41-43.164-6.9238zM188.13 232.97a68.892 68.892 0 0 1 .75781 14.096 68.892 68.892 0 0 1-7.1602 26.982l101.37 16.281 19.924-38.908-114.89-18.451zm173.74 27.9-19.926 38.912 239.51 38.467a68.892 68.892 0 0 1-.69531-13.719 68.892 68.892 0 0 1 7.3496-27.324l-226.24-36.336z"
-                              style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal"
-                              transform="scale(.26458)"/>
-                    </g>
-                    <g fill-opacity=".99597" transform="rotate(3.118 600.37080253 106.46162794)">
-                        <circle cx="106.27" cy="51.536" r="16.571"/>
-                        <circle cx="171.43" cy="110.19" r="16.571"/>
-                        <circle cx="135.76" cy="190.28" r="16.571"/>
-                        <circle cx="48.559" cy="181.11" r="16.571"/>
-                        <circle cx="30.329" cy="95.367" r="16.571"/>
-                    </g>
-                </svg>
-            </a>
-        {% endif %}
-
-        {% if github_url %}
-            <a class="widget-social__link widget__link btn" title="GitHub" rel="noopener noreferrer"
-               href="{{ github_url }}" target="_blank">
-                <svg style="fill: #729fcf" class="widget-social__link-icon icon-github" viewBox="0 0 384 374" width="24"
-                     height="24" xmlns="http://www.w3.org/2000/svg" fill="#fff">
-                    <path d="m192 0c-106.1 0-192 85.8-192 191.7 0 84.7 55 156.6 131.3 181.9 9.6 1.8 13.1-4.2 13.1-9.2 0-4.6-.2-16.6-.3-32.6-53.4 11.6-64.7-25.7-64.7-25.7-8.7-22.1-21.3-28-21.3-28-17.4-11.9 1.3-11.6 1.3-11.6 19.3 1.4  29.4 19.8 29.4 19.8 17.1 29.3 44.9 20.8 55.9 15.9 1.7-12.4 6.7-20.8 12.2-25.6-42.6-4.8-87.5-21.3-87.5-94.8 0-20.9 7.5-38 19.8-51.4-2-4.9-8.6-24.3 1.9-50.7 0 0 16.1-5.2 52.8 19.7 15.3-4.2 31.7-6.4 48.1-6.5 16.3.1 32.7 2.2 48.1 6.5 36.7-24.8 52.8-19.7 52.8-19.7 10.5 26.4 3.9 45.9 1.9 50.7 12.3 13.4 19.7 30.5 19.7 51.4 0 73.7-44.9 89.9-87.7 94.6 6.9 5.9 13 17.6 13 35.5 0 25.6-.2 46.3-.2 52.6 0 5.1 3.5 11.1 13.2 9.2 76.2-25.5 131.2-97.3 131.2-182 0-105.9-86-191.7-192-191.7z"/>
-                </svg>
-            </a>
-        {% endif %}
+      </div>
     </div>
+
+    <hr/>
+
+    <div>
+      <table id="playlist" class="playlist">
+        <tbody id="playlist_body"></tbody>
+      </table>
+    </div>
+
+    <hr/>
+
+    {% if fediverse_url -%}
+    <a class="widget-social__link widget__link btn" title="Fediverse" rel="noopener noreferrer" href="{{ fediverse_url }}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 196.52 196.52" style="fill: #729fcf"><g color="#000"><path d="M181.13 275.14a68.892 68.892 0 0 1-29.465 29.328l161.76 162.39 38.998-19.764-171.29-171.95zm213.36 214.19-38.998 19.764 81.963 82.283a68.892 68.892 0 0 1 29.471-29.332L394.49 489.33zM581.65 339.39l-91.576 46.41 6.752 43.189 103.62-52.514a68.892 68.892 0 0 1-18.791-37.086zm-144.74 73.352-216.53 109.73a68.892 68.892 0 0 1 18.795 37.09l204.48-103.63-6.752-43.191zM367.28 142.44 262.8 346.41l30.848 30.967 110.62-215.96a68.892 68.892 0 0 1-36.99-18.98zM235.63 399.46l-52.922 103.31a68.892 68.892 0 0 1 36.986 18.979l46.781-91.328-30.846-30.965zM150.77 304.92a68.892 68.892 0 0 1-34.416 7.1953 68.892 68.892 0 0 1-6.6504-.69531l30.902 197.66a68.892 68.892 0 0 1 34.416-7.1953 68.892 68.892 0 0 1 6.6465.69531l-30.898-197.66zM239.34 560.54a68.892 68.892 0 0 1 .7207 13.877 68.892 68.892 0 0 1-7.2676 27.18l197.63 31.713a68.892 68.892 0 0 1-.72266-13.879 68.892 68.892 0 0 1 7.2695-27.178l-197.63-31.713zM601.13 377.2l-91.219 178.08a68.892 68.892 0 0 1 36.994 18.982l91.217-178.08a68.892 68.892 0 0 1-36.992-18.984zM476.72 125.33a68.892 68.892 0 0 1-29.471 29.332l141.27 141.81a68.892 68.892 0 0 1 29.469-29.332l-141.26-141.81zM347.79 104.63l-178.58 90.498a68.892 68.892 0 0 1 18.793 37.086l178.57-90.502a68.892 68.892 0 0 1-18.791-37.082zM446.93 154.83a68.892 68.892 0 0 1-34.982 7.4824 68.892 68.892 0 0 1-6.0293-.63281l15.818 101.29 43.162 6.9258-17.969-115.07zm-16 167.03 37.4 239.48a68.892 68.892 0 0 1 33.914-6.9434 68.892 68.892 0 0 1 7.207.79101l-35.357-226.41-43.164-6.9238zM188.13 232.97a68.892 68.892 0 0 1 .75781 14.096 68.892 68.892 0 0 1-7.1602 26.982l101.37 16.281 19.924-38.908-114.89-18.451zm173.74 27.9-19.926 38.912 239.51 38.467a68.892 68.892 0 0 1-.69531-13.719 68.892 68.892 0 0 1 7.3496-27.324l-226.24-36.336z" style="font-feature-settings:normal;font-variant-alternates:normal;font-variant-caps:normal;font-variant-ligatures:normal;font-variant-numeric:normal;font-variant-position:normal;isolation:auto;mix-blend-mode:normal;shape-padding:0;text-decoration-color:#000;text-decoration-line:none;text-decoration-style:solid;text-indent:0;text-orientation:mixed;text-transform:none;white-space:normal" transform="scale(.26458)"/></g><g fill-opacity=".99597" transform="rotate(3.118 600.37080253 106.46162794)"><circle cx="106.27" cy="51.536" r="16.571"/><circle cx="171.43" cy="110.19" r="16.571"/><circle cx="135.76" cy="190.28" r="16.571"/><circle cx="48.559" cy="181.11" r="16.571"/><circle cx="30.329" cy="95.367" r="16.571"/></g></svg></a>
+    {%- endif %}
+
+    {% if github_url -%}
+    <a class="widget-social__link widget__link btn" title="GitHub" rel="noopener noreferrer" href="{{ github_url }}" target="_blank"><svg style="fill: #729fcf" class="widget-social__link-icon icon-github" viewBox="0 0 384 374" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill="#fff"><path d="m192 0c-106.1 0-192 85.8-192 191.7 0 84.7 55 156.6 131.3 181.9 9.6 1.8 13.1-4.2 13.1-9.2 0-4.6-.2-16.6-.3-32.6-53.4 11.6-64.7-25.7-64.7-25.7-8.7-22.1-21.3-28-21.3-28-17.4-11.9 1.3-11.6 1.3-11.6 19.3 1.4  29.4 19.8 29.4 19.8 17.1 29.3 44.9 20.8 55.9 15.9 1.7-12.4 6.7-20.8 12.2-25.6-42.6-4.8-87.5-21.3-87.5-94.8 0-20.9 7.5-38 19.8-51.4-2-4.9-8.6-24.3 1.9-50.7 0 0 16.1-5.2 52.8 19.7 15.3-4.2 31.7-6.4 48.1-6.5 16.3.1 32.7 2.2 48.1 6.5 36.7-24.8 52.8-19.7 52.8-19.7 10.5 26.4 3.9 45.9 1.9 50.7 12.3 13.4 19.7 30.5 19.7 51.4 0 73.7-44.9 89.9-87.7 94.6 6.9 5.9 13 17.6 13 35.5 0 25.6-.2 46.3-.2 52.6 0 5.1 3.5 11.1 13.2 9.2 76.2-25.5 131.2-97.3 131.2-182 0-105.9-86-191.7-192-191.7z"/></svg></a>
+    {%- endif %}
+  </div>
 {% endblock %}
