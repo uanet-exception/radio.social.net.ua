@@ -1,1 +1,1 @@
-{{ config.ICECAST_STREAM_URL }}
+{{ config.ICECAST_STREAM_URL | replace("https:", "http:") }}
