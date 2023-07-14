@@ -48,16 +48,16 @@
         localStorage.setItem('volume', $(this).val());
       })
       .on('click', '#play-toggle', function (e) {
-        let action = $(this).is('.fa-play') ? "play" : "pause";
+        let action = $(this).is('.fa-play-circle') ? "play" : "pause";
         window.mainPlayer.jPlayer(action);
-        $(this).toggleClass('fa-play fa-pause');
+        $(this).toggleClass('fa-play-circle fa-pause-circle');
       })
       .keyup(function (event) {
         let key = (event.keyCode ? event.keyCode : event.which);
         if (key == '32') {
           let action = $("#play-toggle").is('.fa-play') ? "play" : "pause";
           window.mainPlayer.jPlayer(action);
-          $("#play-toggle").toggleClass('fa-play fa-pause');
+          $("#play-toggle").toggleClass('fa-play-circle fa-pause-circle');
         }
       });
 
@@ -128,7 +128,7 @@
           <div class="button-group playback-buttons">
             <div class="button-section">
               <div class="button inline">
-                <i id="play-toggle" class="fa fa-play" aria-hidden="true"></i>
+                <i id="play-toggle" class="fa fa-play-circle fa-3x" aria-hidden="true"></i>
               </div>
             </div>
             <div class="button-section">
@@ -137,7 +137,7 @@
             <span class="fa" id="volume-percentage">50%</span>
             <div class="button-section">
               <div class="button inline">
-                <i class="fa fa-volume-up" aria-hidden="true"></i>
+                <i class="fa fa-volume-up fa-2x" aria-hidden="true"></i>
               </div>
             </div>
           </div>

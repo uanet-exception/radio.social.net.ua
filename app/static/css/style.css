@@ -109,6 +109,10 @@ table {
   box-sizing: border-box;
 }
 
+#nowplaying {
+  vertical-align: middle;
+}
+
 #volume-slider {
   flex-direction: row;
   display: flex;
@@ -131,7 +135,6 @@ table {
 }
 
 .radioplayer i {
-  font-size: 30px;
   width: 30px;
 }
 
