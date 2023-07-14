@@ -95,3 +95,21 @@ thead {
   color: #729FCF;
   font-weight: bold;
 }
+
+.icon-fediverse {
+    background: url("/static/fediverse.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+}
+
+.icon-github {
+    background: url("/static/github.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+}
