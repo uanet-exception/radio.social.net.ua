@@ -171,6 +171,10 @@
     <a class="widget-social__link widget__link btn" title="Fediverse" rel="noopener noreferrer" href="{{ fediverse_url }}" target="_blank"><i class="icon-fediverse" aria-hidden="true"></i></a>
     {%- endif %}
 
+    {% if xmpp_url -%}
+    <a class="widget-social__link widget__link btn" title="XMPP" rel="noopener noreferrer" href="{{ xmpp_url }}" target="_blank"><i class="icon-xmpp" aria-hidden="true"></i></a>
+    {%- endif %}
+
     {% if github_url -%}
     <a class="widget-social__link widget__link btn" title="GitHub" rel="noopener noreferrer" href="{{ github_url }}" target="_blank"><i class="icon-github" aria-hidden="true"></i></a>
     {%- endif %}

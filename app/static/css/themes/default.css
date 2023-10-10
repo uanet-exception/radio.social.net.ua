@@ -113,3 +113,12 @@ thead {
     height: 25px;
     width: 25px;
 }
+
+.icon-xmpp {
+    background: url("/static/xmpp.svg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: inline-block;
+    height: 25px;
+    width: 25px;
+}

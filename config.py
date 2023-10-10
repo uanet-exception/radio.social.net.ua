@@ -16,3 +16,4 @@ class Config(object):
     STATUS_HISTORY_FILE = os.environ.get('STATUS_HISTORY_FILE', os.path.join(basedir, 'icestats_history.json'))  # NOQA: E501
     FEDIVERSE_URL = os.environ.get('FEDIVERSE_URL', 'https://social.net.ua')
     GITHUB_URL = os.environ.get('GITHUB_URL', 'https://github.com/uanet-exception/radio.social.net.ua')
+    XMPP_URL = os.environ.get('XMPP_URL', 'xmpp:radio@conference.talks.in.ua?join')

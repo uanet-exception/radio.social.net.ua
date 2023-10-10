@@ -18,6 +18,7 @@ def site_variables():
         'description': app.config.get('SITE_DESCRIPTION'),
         'fediverse_url': app.config.get('FEDIVERSE_URL'),
         'github_url': app.config.get('GITHUB_URL'),
+        'xmpp_url': app.config.get('XMPP_URL'),
     }
 
 
