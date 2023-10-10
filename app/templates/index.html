@@ -13,8 +13,8 @@
 
       $(document).ready(function () {
 
-        checkStatus();
-        setInterval("checkStatus()", 10000);
+        updatePlaylist();
+        setInterval("updatePlaylist()", 10000);
 
         window.mainPlayer = $("#jquery_jplayer_1");
         var ready = false;
@@ -55,13 +55,13 @@
       .keyup(function (event) {
         let key = (event.keyCode ? event.keyCode : event.which);
         if (key == '32') {
-          let action = $("#play-toggle").is('.fa-play') ? "play" : "pause";
+          let action = $("#play-toggle").is('.fa-play-circle') ? "play" : "pause";
           window.mainPlayer.jPlayer(action);
           $("#play-toggle").toggleClass('fa-play-circle fa-pause-circle');
         }
       });
 
-      function checkStatus() {
+      function updatePlaylist() {
         function format_track(track) {
           return (track.artist) ? (track.artist + " - " + track.title) : track.title;
         }
