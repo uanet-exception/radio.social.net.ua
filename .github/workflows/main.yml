@@ -11,7 +11,7 @@ on:
 jobs:
   ghr_push:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    # if: github.event_name == 'push'
 
     steps:
       - name: checkout
